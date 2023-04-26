@@ -1,34 +1,43 @@
 (ns crew.core-test
-  (:require [clojure.test :refer [deftest, is, testing]]
+  (:require [clojure.test :refer [deftest, is, run-tests]]
             [crew.core :as sut]))
 
-(deftest t--trick-winner
-  (testing "single suit"
-    (let [trick [{:suit :yellow :number 2}
-                 {:suit :yellow :number 8}
-                 {:suit :yellow :number 5}
-                 {:suit :yellow :number 4}]]
+; TODO: quicktest for clojure?
+(deftest t--on-suit? 
+  (let [card {:suit :yellow #_"more stuff here"}]
+    (is (true? (sut/on-suit? :yellow card)))
 
-      (is (= (sut/trick-winner trick) 1))))
+    (is (false? (sut/on-suit? :blue card)))
 
-  (testing "multiple suites"
-    (let [trick [{:suit :pink :number 6}
-                 {:suit :blue :number 8}
-                 {:suit :pink :number 5}
-                 {:suit :pink :number 4}]]
+    (is (false? (sut/trump? card)))))
 
-      (is (= (sut/trick-winner trick) 0))))
+(deftest t--trick-rating
+  (let [trump {:suit :trump :number 2}]
+    ; suit doesn't matter
+    (is (= (sut/trick-rating :yellow trump)
+           102))
 
-  (testing "submarines"
-    (let [trick [{:suit :yellow :number 6}
-                 {:suit :submarine :number 4}
-                 {:suit :yellow :number 5}
-                 {:suit :submarine :number 2}]]
+    (is (= (sut/trick-rating :trump  trump)
+           102)))
 
-      (is (= (sut/trick-winner trick) 1)))))
+  (let [card {:suit :yellow :number 5}]
+    ; on suit
+    (is (= (sut/trick-rating :yellow card) 
+           15)
+
+        (= (sut/trick-rating :pink card) 
+           5))))
+
+; TODO: this breaks
+(deftest t--turn-order
+  (let [game {:players [1 2 3 4 #_ "or real players"]
+              :last-winner-index 2}]
+    (is (= (sut/turn-order game) [3 4 1 2]))))
+
+
 
 (comment
 
-  (clojure.test/run-tests 'crew.core-test)
+  (run-tests)
 
   :rcf)
