@@ -2,7 +2,6 @@
   (:require [clojure.test :refer [deftest is run-test testing]]
             [crew.vec :as sut]))
 
-; TODO: quicktest for clojure?
 (deftest t--re-head
   (testing "on empty collections"
     (is (= (sut/re-head 0 []) 
